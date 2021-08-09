@@ -17,7 +17,7 @@ make.lag <- function(vec, n, date.vec, dates) {
   return(lagged.vec)
 }
 
-make.n.lags <- function(vec, n, date.vec, dates) {
+ qmake.n.lags <- function(vec, n, date.vec, dates) {
   lags.vec <- c()
   for (i in 1:n) {
     new.lag <- make.lag(vec, n, date.vec, dates)

@@ -1,6 +1,7 @@
 library(dplyr)
 library(tcltk)
 
+setwd("/home/hoagy/crime_regression") # set the working directory
 data.folder <- "data/api_data"
 data.sub.folders <- list.files(data.folder)
 
@@ -9,15 +10,21 @@ dates <- list()
 outcome.cats <- list()
 print("Extracting LSOAs and dates from data")
 for (folder in data.sub.folders){
-  folder.path <- file.path(data.folder, folder)
-  for (file.name in list.files(folder.path)){
-    # Going through each file (but not the 'outcome' files), to get the lsoas and dates
-    if (!grepl("outcomes", file.name)) {
-      file <- read.csv(file.path(folder.path, file.name))
-      lsoas <- lsoas %>% append(unique(file$LSOA.code))
-      dates <- dates %>% append(file.name %>% substr(1, 7))
-      outcome.cats <- outcome.cats %>% append(unique(file$Last.outcome.category))
+  year <- folder %>% substr(1, 4) %>% strtoi
+  month <- folder %>% substr(6, 7) %>% strtoi
+  if (year <= 2018 || (year == 2018 && month < 6)) {
+    init.t <- proc.time()
+    folder.path <- file.path(data.folder, folder)
+    for (file.name in list.files(folder.path)){
+      # Going through each file (but not the 'outcome' files), to get the lsoas and dates
+      if (!grepl("outcomes", file.name)) {
+        file <- read.csv(file.path(folder.path, file.name))
+        lsoas <- lsoas %>% append(unique(file$LSOA.code))
+        dates <- dates %>% append(file.name %>% substr(1, 7))
+        outcome.cats <- outcome.cats %>% append(unique(file$Last.outcome.category))
+      }
     }
+    print(proc.time() - init.t)
   }
   print(folder.path)
 }
@@ -49,6 +56,9 @@ clearup.cats <- c("Offender sent to prison", "Offender given suspended prison se
 print("Counting crimes and clearups in each LSOA")
 for (folder in data.sub.folders){
   folder.path <- file.path(data.folder, folder)
+  year <- folder %>% substr(1, 4) %>% strtoi
+  month <- folder %>% substr(6, 7) %>% strtoi
+  if (year <= 2018 || (year == 2018 && month < 6)) {
     for (file.name in list.files(folder.path)){
       if (!grepl("outcomes", file.name)) {
         file <- read.csv(file.path(folder.path, file.name))
@@ -69,11 +79,12 @@ for (folder in data.sub.folders){
           
         }
       }
+    }
   }
   print(folder.path)
 }
 
 # Saving the completed datasets
-saveRDS(lsoa.crime.data, file="crime_data.rds")
-saveRDS(lsoa.clearup.data, file="clearup_data.rds")
+saveRDS(lsoa.crime.data, file="crime_data_early.rds")
+saveRDS(lsoa.clearup.data, file="clearup_data_early.rds")
 
