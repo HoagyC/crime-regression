@@ -5,11 +5,12 @@ setwd("/home/hoagy/crime_regression") # set the working directory
 data.folder <- "data/api_data"
 data.sub.folders <- list.files(data.folder)
 
-lsoas <- list()
-dates <- list()
+lsoas <- readRDS("lsoas.list")
+dates <- readRDS("dates.list")
 outcome.cats <- list()
 print("Extracting LSOAs and dates from data")
-for (folder in data.sub.folders){
+for (folder in head(data.sub.folders, 1)){
+  outcome.cats <- list()
   year <- folder %>% substr(1, 4) %>% strtoi
   month <- folder %>% substr(6, 7) %>% strtoi
   if (year <= 2018 || (year == 2018 && month < 6)) {
@@ -22,9 +23,12 @@ for (folder in data.sub.folders){
         lsoas <- lsoas %>% append(unique(file$LSOA.code))
         dates <- dates %>% append(file.name %>% substr(1, 7))
         outcome.cats <- outcome.cats %>% append(unique(file$Last.outcome.category))
+        outcome.cats <- unique(outcome.cats)
       }
     }
+    print(folder)
     print(proc.time() - init.t)
+    print(outcome.cats)
   }
   print(folder.path)
 }
@@ -50,11 +54,12 @@ rownames(lsoa.crime.data) <- dates
 print("Dataframes initialized")
 
 crime.type <- "Violence and sexual offences"
+crime.types <- list()
 all.outcome.cats <- unique(outcome.cats)
 clearup.cats <- c("Offender sent to prison", "Offender given suspended prison sentence", "Offender fined", "Offender ordered to pay compensation")
 
 print("Counting crimes and clearups in each LSOA")
-for (folder in data.sub.folders){
+for (folder in head(data.sub.folders, 1)){
   folder.path <- file.path(data.folder, folder)
   year <- folder %>% substr(1, 4) %>% strtoi
   month <- folder %>% substr(6, 7) %>% strtoi
@@ -69,6 +74,8 @@ for (folder in data.sub.folders){
             
             # Summing the crimes in the correct lsoa that are of the chosen crime type
             crimes <- sum(file$Crime.type == crime.type & file$LSOA.code == lsoa)
+            crime.types <- crime.types %>% append(unique(file$Crime.type)) %>% unique
+
             # Summing the crimes in the correct lsoa that are of the chosen crime type and cleared up
             clearups <- sum(file$Crime.type == crime.type & file$Last.outcome.category %in% clearup.cats & file$LSOA.code == lsoa)
 
@@ -84,7 +91,12 @@ for (folder in data.sub.folders){
   print(folder.path)
 }
 
-# Saving the completed datasets
-saveRDS(lsoa.crime.data, file="crime_data_early.rds")
-saveRDS(lsoa.clearup.data, file="clearup_data_early.rds")
+View(lsoa.crime.data)
+
+# 
+# # Saving the completed datasets
+# saveRDS(lsoa.crime.data, file="crime_data_early.rds")``
+# saveRDS(lsoa.clearup.data, file="clearup_data_early.rds")
+
+
 
