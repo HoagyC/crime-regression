@@ -19,12 +19,17 @@ data.folder <- ("data/month_files/")              # Folder containing the data, 
 
 # Initializing burglary dataframes
 pf.monthly.burglary <- matrix(0, nrow=0, ncol=length(police.forces))  # Here we make the initial shape of the data frame
-pf.monthly.burglary <- data.frame(pf.monthly.burglary)      # The matrix is converted into a data frame
+pf.monthly.burglary <- data.frame(pf.monthly.burglary)                # The matrix is converted into a data frame
 colnames(pf.monthly.burglary) <- police.forces                        # Adds the names of the LSOAs as column names
 
 pf.monthly.burglary.clearup <- data.frame(pf.monthly.burglary)  # Making copies to hold the rest of the data
+colnames(pf.monthly.burglary.clearup) <- police.forces          # Renaming otherwise spaces turn to periods
 pf.monthly.robbery <- data.frame(pf.monthly.burglary)
+colnames(pf.monthly.robbery) <- police.forces 
 pf.monthly.robbery.clearup <- data.frame(pf.monthly.burglary)
+colnames(pf.monthly.robbery.clearup) <- police.forces 
+
+print(colnames(pf.monthly.burglary.clearup))
 
 print("Dataframes initialized")
 
@@ -95,6 +100,7 @@ for (file.name in list.files(data.folder)){
   print(paste(file.name, time.taken))                                                   # Displaying the time taken
 }
 
+
 # Changing all NAs to zeros
 pf.monthly.burglary[is.na(pf.monthly.burglary)] <- 0
 pf.monthly.burglary.clearup[is.na(pf.monthly.burglary.clearup)] <- 0
@@ -110,7 +116,7 @@ row.names(pf.monthly.robbery.clearup) <- tail(dates, n.dates)
 
 # Saving the results in defined folder
 save.folder <- "data/prepared_datasets/"
-saveRDS(pf.monthly.burglary, file.path(save.folder, "burglary_by_month_pf"))
-saveRDS(pf.monthly.burglary.clearup, file.path(save.folder, "burglary_clearup_by_month_pf"))
-saveRDS(pf.monthly.robbery, file.path(save.folder, "robbery_by_month_pf"))
-saveRDS(pf.monthly.robbery.clearup, file.path(save.folder, "robbery_clearup_by_month_pf"))
+saveRDS(pf.monthly.burglary, file.path(save.folder, "burglary_by_month_pf.RDS"))
+saveRDS(pf.monthly.burglary.clearup, file.path(save.folder, "burglary_clearup_by_month_pf.RDS"))
+saveRDS(pf.monthly.robbery, file.path(save.folder, "robbery_by_month_pf.RDS"))
+saveRDS(pf.monthly.robbery.clearup, file.path(save.folder, "robbery_clearup_by_month_pf.RDS"))
