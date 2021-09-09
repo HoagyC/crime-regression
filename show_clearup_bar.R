@@ -17,6 +17,7 @@ act.all.files <- function(acting.func, data.folder, save = T, print.=F) {
   return(save.l)
 }
 
+setwd("~/crime_regression/")
 all.outcomes <- readRDS("useful_outputs/all_outcome_cats.rds")
 
 get.n.outcomes <- function(month.data) {
@@ -28,11 +29,10 @@ get.n.outcomes <- function(month.data) {
   return(counts)
 }
 
-
 data.folder <- "data/month_files"
 prop.with.outcomes <- act.all.files(get.n.outcomes, data.folder, save=T, print. = T)
 bar.data <- lapply(prop.with.outcomes, unlist)
 data.m <- do.call(cbind, bar.data)
 data2 <- rbind(data.m[8:20, ], data.m[1:7, ], data.m[21:28, ])
 col <- c(rep("red", 13), rep("grey", 15))
-barplot(data2, col=col, names.arg = tail(list.files(data.folder), -16), cex.names = 0.5)
+outs.graph <- barplot(data2, col=col, names.arg = tail(list.files(data.folder), -16), cex.names = 0.5)

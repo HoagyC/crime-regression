@@ -1,5 +1,5 @@
 setwd("/home/hoagy/crime_regression")
-data.folder <- "data/api_data"
+data.folder <- "data/api_data_new/"
 
 for (month.name in list.files(data.folder)) {
   first.one <- T
@@ -15,6 +15,6 @@ for (month.name in list.files(data.folder)) {
       first.one <- F
     }
   }
-  saveRDS(month.file, file.path("data", "month_files", paste(month.name, ".RDS", sep="")))
+  saveRDS(month.file, file.path("data", "month_files", paste(month.name, "_new.RDS", sep="")))
   print(month.name)
 }
