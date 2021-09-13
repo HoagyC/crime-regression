@@ -3,8 +3,8 @@ library(dplyr)
 setwd("~/crime_regression/")
 data.folder <- "data/prepared_datasets"
 
-crime.data <- readRDS(file.path(data.folder, "robbery_by_month_pf.RDS"))
-clearup.data <- readRDS(file.path(data.folder, "robbery_clearup_by_month_pf.RDS"))
+crime.data <- readRDS(file.path(data.folder, "burglary_by_month_pf.RDS"))
+clearup.data <- readRDS(file.path(data.folder, "burglary_clearup_by_month_pf.RDS"))
 pop.data <- readRDS("useful_outputs/police_force_populations.RDS")
 
 n.months.clearups <- 12
@@ -33,6 +33,10 @@ for (n.months in 1:20) {
   }
   
   crime.rate.vector <- crimes.vector / pop.vector
+  print(mean(crime.rate.vector[!is.na(crime.rate.vector)]))
+  aggrs <- aggregate(crime.rate.vector, list(pfs.vector), mean)
+  aggr.vec <- rep(aggrs$x, each=nrow(crime.data))
+  crime.rate.vector <- crime.rate.vector - aggr.vec
   
   print('made primary data vectors')
   
@@ -95,7 +99,7 @@ for (n.months in 1:20) {
                             paste("clearup", n.months.clearups, "m", sep="")
   )
   
-  save.name <- paste("robbery_by_month_", n.months, ".RDS", sep="")
+  save.name <- paste("burglary_by_month_av_", n.months, ".RDS", sep="")
   saveRDS(panel.data, file.path(data.folder, save.name))
   print(paste("saved data as", save.name))
 }
